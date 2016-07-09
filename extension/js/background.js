@@ -195,7 +195,7 @@
       } ;
 
   // Core recursive DOM-building function
-    function getKvovDOM(value, keyName) {
+    function getKvovDOM(value, keyName, level) {
       var type,
           kvov,
           nonZeroSize,
@@ -239,6 +239,7 @@
         if (keyName !== false) { // NB: "" is a legal keyname in JSON
           // This kvov must be an object property
             kvov.classList.add('objProp') ;
+            kvov.classList.add('level-'+level) ;
           // Create a span for the key name
             keySpan = templates.t_key.cloneNode(false) ;
             keySpan.textContent = JSON.stringify(keyName).slice(1,-1) ; // remove quotes
@@ -252,6 +253,7 @@
         else {
           // This is an array element instead
             kvov.classList.add('arrElem') ;
+            kvov.classList.add('level-'+level) ;
         }
       
       // Generate DOM for this value
@@ -300,7 +302,7 @@
                   for (k in value) {
                     if (value.hasOwnProperty(k)) {
                       count++ ;
-                      childKvov =  getKvovDOM(value[k], k) ;
+                      childKvov =  getKvovDOM(value[k], k, level+1) ;
                       // Add comma
                         comma = templates.t_commaText.cloneNode() ;
                         childKvov.appendChild(comma) ;
@@ -329,7 +331,7 @@
                 // For each key/value pair, add the markup
                   for (var i=0, length=value.length, lastIndex=length-1; i<length; i++) {
                     // Make a new kvov, with no key
-                      childKvov = getKvovDOM(value[i], false) ;
+                      childKvov = getKvovDOM(value[i], false,level+1) ;
                     // Add comma if not last one
                       if (i < lastIndex)
                         childKvov.appendChild( templates.t_commaText.cloneNode() ) ;
@@ -367,7 +369,7 @@
       // spin(5) ;
 
       // Format object (using recursive kvov builder)
-        var rootKvov = getKvovDOM(obj, false) ;
+        var rootKvov = getKvovDOM(obj, false, 1) ;
 
       // The whole DOM is now built.
 
